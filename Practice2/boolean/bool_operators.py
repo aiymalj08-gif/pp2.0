@@ -1,14 +1,14 @@
-'''bool(False)
-bool(None)
-bool(0)
-bool("")
-bool(())
-bool([])
-bool({}) #these all return False '''
+# Boolean operators: and, or, not
 
+has_id = True
+has_ticket = False
 
-x = 200
-print(isinstance(x, int)) # asks whether x is integer --> if Yes then it outputs true
+can_enter = has_id and has_ticket
+print("Can enter:", can_enter)
 
-b = "3.14"
-print(isinstance(b, (int, float))) # asks whether b is integer or float--> if No then it outputs false
+has_invitation = True
+can_enter_event = has_ticket or has_invitation
+print("Can enter event:", can_enter_event)
+
+is_raining = False
+print("Is not raining:", not is_raining)
