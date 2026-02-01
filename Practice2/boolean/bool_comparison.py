@@ -1,7 +1,17 @@
-a = 200
-b = 33
+# Boolean comparisons
 
-if b > a:
-  print("b is greater than a")
-else:
-  print("b is not greater than a")
+a = 15
+b = 20
+
+print("a =", a, "b =", b)
+print("a == b:", a == b)
+print("a != b:", a != b)
+print("a > b:", a > b)
+print("a < b:", a < b)
+print("a >= b:", a >= b)
+print("a <= b:", a <= b)
+
+score = 75
+passing_score = 60
+
+print("Passed exam:", score >= passing_score)
