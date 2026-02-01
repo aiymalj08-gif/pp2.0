@@ -1,3 +1,7 @@
-a = 5
-b = 2
-if a > b: print("a is greater than b")
+# Short-hand if (ternary operator)
+
+age = 18
+status = "Adult" if age >= 18 else "Minor"
+
+print("Age:", age)
+print("Status:", status)
