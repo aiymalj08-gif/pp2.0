@@ -4,8 +4,8 @@ a = 15
 b = 20
 
 print("a =", a, "b =", b)
-print("a == b:", a == b)
-print("a != b:", a != b)
+print("a == b:", a == b) # outputs False because the a and b is not equal
+print("a != b:", a != b) # True
 print("a > b:", a > b)
 print("a < b:", a < b)
 print("a >= b:", a >= b)
