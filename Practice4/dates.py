@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+#datetime is module and datetime, timedelta are classes
 #timedelta allows us to perform calculations using timedelta objects
 
 
