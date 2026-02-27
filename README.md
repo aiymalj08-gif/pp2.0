@@ -50,3 +50,55 @@
 * **Multiple inheritance** – a class inherits from more than one parent class
 * **Polymorphism** – same method name behaves differently depending on the object
 
+# PRACTICE 4 (Python Iterators, Generators, Dates, Math, and JSON)
+
+## Python Iterators & Generators
+
+- **Iterator** – an object that can be iterated (looped) over using `iter()` and `next()`.
+- **Generator** – a special function that yields values one at a time using `yield`.
+- **`yield` statement** – pauses the function and returns a value, remembers state for next call.
+- **Creating generators**:
+  - Generate squares of numbers
+  - Generate even numbers in a range
+  - Generate numbers divisible by 3 and 4
+  - Generate numbers in a given range or descending order
+
+---
+
+## Python Date & Time
+
+- **`datetime` module** – used for date and time operations.
+- **`datetime.now()`** – current date and time.
+- **`timedelta(days=n)`** – time difference object used to add or subtract time.
+- **Subtract days** – `new_date = current_date - timedelta(days=5)`
+- **Yesterday / Today / Tomorrow** – calculate using `timedelta(days=±1)`
+- **Drop microseconds** – `datetime.replace(microsecond=0)`
+- **Difference in seconds** – `(date2 - date1).total_seconds()`
+
+---
+
+## Python Math Module
+
+- **`math` module** – provides mathematical functions and constants.
+- **Convert degrees to radians** – `math.radians(degree)`
+- **Area of a trapezoid** – `0.5 * (base1 + base2) * height`
+- **Area of regular polygon** – `(n * s^2) / (4 * math.tan(math.pi / n))`
+  - `n` = number of sides, `s` = side length
+- **Area of parallelogram** – `base * height`
+
+---
+
+## Python JSON Parsing
+
+- **JSON (JavaScript Object Notation)** – a structured data format.
+- **`json` module** – used to parse (`json.load()`) and create (`json.dump()`) JSON.
+- **Read JSON file** – `with open("file.json", "r") as file: data = json.load(file)`
+- **Access nested JSON**:
+  - Use dictionary keys: `data["imdata"]`  
+  - Access each item: `for item in data["imdata"]`  
+  - Access nested attributes: `item["l1PhysIf"]["attributes"]`
+- **Formatted output**:
+  - Use `f"{value:width}"` to align columns
+  - `width` = minimum number of characters for that column
+
+---
