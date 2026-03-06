@@ -102,3 +102,18 @@
   - `width` = minimum number of characters for that column
 
 ---
+# Practice5 – Receipt Parsing with Python RegEx
+
+This project demonstrates how to extract structured data from a raw receipt using Python and regular expressions.
+
+## Features
+- Extract prices
+- Extract product names
+- Calculate total
+- Extract date and time
+- Extract payment method
+- Output structured JSON
+
+## Run
+
+python receipt_parser.py
