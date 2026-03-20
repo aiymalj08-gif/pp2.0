@@ -117,3 +117,23 @@ This project demonstrates how to extract structured data from a raw receipt usin
 ## Run
 
 python receipt_parser.py
+
+# Practice6
+
+This repository contains examples of:
+
+- File handling in Python
+- Directory management
+- Built-in functions
+
+## Topics Covered
+
+- File modes (r, w, a, x)
+- Reading files (read, readline, readlines)
+- Writing and appending files
+- shutil file operations
+- Directory management using os
+- Built-in functions: map, filter, reduce, enumerate, zip, sorted
+
+## Author
+Student practice repository
