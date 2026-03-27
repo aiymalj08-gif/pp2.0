@@ -138,7 +138,7 @@ This repository contains examples of:
 ## Author
 Student practice repository
 
-#  PRACTICE 4 (📱 PhoneBook (Python + PostgreSQL))
+#  PRACTICE 7 (📱 PhoneBook (Python + PostgreSQL))
 
 ## 📌 Description
 
