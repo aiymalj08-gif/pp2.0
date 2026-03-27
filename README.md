@@ -137,3 +137,48 @@ This repository contains examples of:
 
 ## Author
 Student practice repository
+
+# 📱 PhoneBook (Python + PostgreSQL)
+
+## 📌 Description
+
+A simple console-based PhoneBook application that demonstrates integration between **Python** and **PostgreSQL** using the `psycopg2` library.
+
+---
+
+## 🧠 Core Idea
+
+The project implements basic **CRUD operations**:
+
+* Create → INSERT
+* Read → SELECT
+* Update → UPDATE
+* Delete → DELETE
+
+---
+
+## ⚙️ Features
+
+* Add contacts
+* View all contacts
+* Search by name or phone
+* Update contact info
+* Delete contacts
+* Import data from CSV
+
+---
+
+## 🔌 Tech Stack
+
+* Python
+* PostgreSQL
+* psycopg2
+
+---
+
+## ▶️ Run
+
+```bash
+pip install psycopg2-binary
+python phonebook.py
+```
