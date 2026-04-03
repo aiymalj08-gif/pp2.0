@@ -182,3 +182,70 @@ The project implements basic **CRUD operations**:
 pip install psycopg2-binary
 python phonebook.py
 ```
+# Practice 8 – PostgreSQL Functions & Stored Procedures
+
+## Overview
+This practice extends the PhoneBook app from Practice 7 by moving core data logic into the PostgreSQL database layer using PL/pgSQL functions and stored procedures.
+
+---
+
+## Files
+| File | Description |
+|---|---|
+| `phonebook.py` | Main app with menu-driven interface |
+| `functions.sql` | PostgreSQL functions (search, pagination) |
+| `procedures.sql` | PostgreSQL stored procedures (upsert, bulk insert, delete) |
+| `config.py` | Database connection settings |
+| `connect.py` | psycopg2 connection helper |
+
+---
+
+## How to Run
+
+**1. Set up the database**
+```bash
+psql -U postgres -d phonebook_db -f functions.sql
+psql -U postgres -d phonebook_db -f procedures.sql
+```
+
+**2. Run the app**
+```bash
+python phonebook.py
+```
+
+---
+
+## Features
+
+### Functions
+- `get_contacts_by_pattern(p_pattern)` — returns all contacts whose name or phone contains the given pattern (case-insensitive)
+- `get_contacts_paginated(p_limit, p_offset)` — returns contacts in pages using `LIMIT` and `OFFSET`
+
+### Stored Procedures
+- `upsert_contact(name, phone)` — inserts a new contact; if the name already exists, updates the phone
+- `bulk_insert_contacts(names[], phones[])` — loops through arrays, validates each phone with regex `^[0-9]{11}$`, skips and logs invalid entries
+- `delete_contact(p_name, p_phone)` — deletes a contact by name, phone, or both
+
+---
+
+## Menu Options
+| Option | Action |
+|---|---|
+| 1 | Upsert a contact |
+| 2 | Bulk insert from comma-separated input |
+| 3 | Search by name or phone pattern |
+| 4 | View contacts by page |
+| 5 | Get all contacts |
+| 6 | Delete by name |
+| 7 | Delete by phone |
+| 8 | Import from CSV |
+| 0 | Exit |
+
+---
+
+## Phone Validation
+Phones must be exactly **11 digits** with no spaces or dashes.
+
+✅ `79161234567`
+❌ `7-916-123-45-67`
+❌ `abc`
