@@ -49,13 +49,12 @@ def search_by_pattern(pattern):
     return rows
 
 
-def get_contacts_page(page=1, page_size=5):
-    offset = (page - 1) * page_size
+def get_contacts_page(limit=100, offset=0):
     rows = _run_query(
         "SELECT * FROM get_contacts_paginated(%s, %s)",
-        (page_size, offset)
+        (limit, offset)
     )
-    print(f"\n--- Page {page} (size={page_size}) ---")
+    print(f"\n--- Limit {limit}, Offset {offset} ---")
     for row in rows:
         print(f"  id={row[0]}  name={row[1]}  phone={row[2]}")
     if not rows:
@@ -125,11 +124,11 @@ def menu():
 
         elif choice == "4":
             try:
-                page      = int(input("Page (default 1): ").strip() or "1")
-                page_size = int(input("Size (default 5): ").strip() or "5")
+                limit  = int(input("Limit  (default 100): ").strip() or "100")
+                offset = int(input("Offset (default 0):   ").strip() or "0")
             except ValueError:
-                page, page_size = 1, 5
-            get_contacts_page(page, page_size)
+                limit, offset = 100, 0
+            get_contacts_page(limit, offset)
 
         elif choice == "5":
             get_all()
