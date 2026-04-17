@@ -249,3 +249,16 @@ Phones must be exactly **11 digits** with no spaces or dashes.
 ✅ `79161234567`
 ❌ `7-916-123-45-67`
 ❌ `abc`
+
+
+# 🎮 Practice 9 - Pygame Projects Collection
+
+This project contains several small **Python + Pygame** applications created for practice:
+
+- 🕒 Mickey’s Clock
+- 🎵 Music Player
+- 🏀 Moving Ball Animation
+
+---
+
+## 📁 Project Structure
