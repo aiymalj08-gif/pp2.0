@@ -7,6 +7,7 @@ class MusicPlayer:
         self.playlist = []
         self.current_index = 0
         self.is_playing = False
+        self.start_time = 0
 
         for file in os.listdir(music_folder):
             if file.endswith(".mp3") or file.endswith(".wav"):
@@ -38,6 +39,7 @@ class MusicPlayer:
             pygame.mixer.music.load(self.playlist[self.current_index]["path"])
             pygame.mixer.music.play()
             self.is_playing = True
+            self.start_time = pygame.time.get_ticks()
 
     def stop(self):
         pygame.mixer.music.stop()
@@ -61,3 +63,13 @@ class MusicPlayer:
 
     def get_status(self):
         return "▶ Playing" if self.is_playing else "⏹ Stopped"
+    
+    def get_progress(self):
+        if not self.playlist or not self.is_playing:
+            return 0
+
+        pos = pygame.mixer.music.get_pos()  # milliseconds
+        if pos < 0:
+            return 0
+
+        return pos / 1000  # convert to seconds

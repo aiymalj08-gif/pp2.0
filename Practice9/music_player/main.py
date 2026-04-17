@@ -86,6 +86,29 @@ while running:
         )
         screen.blit(track_num, (SCREEN_WIDTH // 2 - track_num.get_width() // 2, 230))
 
+   # Smooth progress bar with moving dot
+    if player.playlist:
+        bar_width = 400
+        bar_height = 4   # thinner line
+        x = SCREEN_WIDTH // 2 - bar_width // 2
+        y = 260
+
+        total_time = 180  # (still fake for now)
+        current_time = player.get_progress()
+
+        progress = min(current_time / total_time, 1)
+
+    # Background line
+        pygame.draw.rect(screen, (100, 100, 100), (x, y, bar_width, bar_height))
+
+    # Progress line
+        pygame.draw.rect(screen, CYAN, (x, y, bar_width * progress, bar_height))
+
+    # Moving circle (dot)
+        dot_x = x + int(bar_width * progress)
+        dot_y = y + bar_height // 2
+
+        pygame.draw.circle(screen, CYAN, (dot_x, dot_y), 7)
     # Controls guide
     controls = [
         "P = Play",
@@ -94,7 +117,7 @@ while running:
         "B = Previous Track",
         "Q = Quit"
     ]
-    y_pos = 290
+    y_pos = 300
     for control in controls:
         text = font_small.render(control, True, (180, 180, 180))
         screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, y_pos))
