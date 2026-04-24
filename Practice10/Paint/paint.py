@@ -15,6 +15,9 @@ Full code comments throughout.
 import pygame
 import sys
 
+# ─────────────────────────────────────────────
+#  Window / layout constants
+# ─────────────────────────────────────────────
 SCREEN_W   = 900
 SCREEN_H   = 700
 TOOLBAR_W  = 160          # Left-side toolbar width
@@ -22,7 +25,9 @@ CANVAS_X   = TOOLBAR_W    # Canvas starts after the toolbar
 CANVAS_W   = SCREEN_W - TOOLBAR_W
 CANVAS_H   = SCREEN_H
 
-
+# ─────────────────────────────────────────────
+#  Colours
+# ─────────────────────────────────────────────
 WHITE      = (255, 255, 255)
 BLACK      = (0,   0,   0)
 DARK       = (30,  30,  30)
@@ -57,6 +62,9 @@ TOOL_RECT    = "rect"
 TOOL_CIRCLE  = "circle"
 TOOL_ERASER  = "eraser"
 
+# ─────────────────────────────────────────────
+#  Pygame initialisation
+# ─────────────────────────────────────────────
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
 pygame.display.set_caption("Paint")
@@ -66,11 +74,21 @@ clock = pygame.time.Clock()
 font      = pygame.font.SysFont("Arial", 15, bold=True)
 font_head = pygame.font.SysFont("Arial", 17, bold=True)
 
+
+# ══════════════════════════════════════════════
+#  CANVAS
+# ══════════════════════════════════════════════
+
 # A separate Surface is used as the persistent canvas so that in-progress
 # drag operations (rect / circle) can be previewed without permanently
 # marking the canvas until the mouse button is released.
 canvas = pygame.Surface((CANVAS_W, CANVAS_H))
 canvas.fill(WHITE)
+
+
+# ══════════════════════════════════════════════
+#  TOOLBAR LAYOUT HELPERS
+# ══════════════════════════════════════════════
 
 def label(surface, text, x, y, colour=LIGHT_GRAY):
     """Draw a small label on the toolbar."""
@@ -108,6 +126,11 @@ def brush_minus_rect():
 
 def brush_plus_rect():
     return pygame.Rect(52, 370, 36, 28)
+
+
+# ══════════════════════════════════════════════
+#  TOOLBAR DRAWING
+# ══════════════════════════════════════════════
 
 def draw_toolbar(active_tool, current_colour, brush_size):
     """Render the entire left-side toolbar."""
@@ -156,6 +179,11 @@ def draw_toolbar(active_tool, current_colour, brush_size):
         pygame.draw.rect(screen, col,   r, border_radius=4)
         pygame.draw.rect(screen, WHITE, r, 1, border_radius=4)  # border
 
+
+# ══════════════════════════════════════════════
+#  CANVAS DRAWING UTILITIES
+# ══════════════════════════════════════════════
+
 def canvas_pos(mx, my):
     """Convert screen mouse coordinates to canvas-local coordinates."""
     return mx - CANVAS_X, my
@@ -196,6 +224,11 @@ def draw_circle_shape(surface, start, end, colour, fill=True):
             pygame.draw.ellipse(surface, colour, rect)
         else:
             pygame.draw.ellipse(surface, colour, rect, 3)
+
+
+# ══════════════════════════════════════════════
+#  MAIN APPLICATION LOOP
+# ══════════════════════════════════════════════
 
 def main():
     # ── Application state ───────────────────
@@ -269,9 +302,9 @@ def main():
                     end_pos = canvas_pos(*event.pos)
                     # Commit rectangle / circle to the permanent canvas on release
                     if active_tool == TOOL_RECT:
-                        draw_rect_shape(canvas, drag_start, end_pos, current_colour)
+                        draw_rect_shape(canvas, drag_start, end_pos, current_colour, fill=False)
                     elif active_tool == TOOL_CIRCLE:
-                        draw_circle_shape(canvas, drag_start, end_pos, current_colour)
+                        draw_circle_shape(canvas, drag_start, end_pos, current_colour, fill=False)
                 drawing    = False
                 drag_start = None
                 last_pos   = None
@@ -316,8 +349,8 @@ def main():
             if active_tool == TOOL_RECT:
                 draw_rect_shape(preview, drag_start, cur_pos, current_colour, fill=False)
             elif active_tool == TOOL_CIRCLE:
-                draw_circle_shape(preview, drag_start, cur_pos, current_colour, fill=False)
-            screen.blit(preview, (CANVAS_X, 0))
+                draw_circle_shape(preview, drag_start, cur_pos, current_colour, fill=False)            
+                screen.blit(preview, (CANVAS_X, 0))
 
         # 4. Eraser cursor – show a circle where the eraser will act
         if active_tool == TOOL_ERASER:
