@@ -250,7 +250,6 @@ Phones must be exactly **11 digits** with no spaces or dashes.
 ❌ `7-916-123-45-67`
 ❌ `abc`
 
-
 # 🎮 Practice 9 - Pygame Projects Collection
 
 This project contains several small **Python + Pygame** applications created for practice:
@@ -262,3 +261,36 @@ This project contains several small **Python + Pygame** applications created for
 ---
 
 ## 📁 Project Structure
+# Practice 10 – Pygame Games
+
+## Overview
+Three mini-games built with Python and pygame: a car racer, a snake game, and a paint application.
+
+## Requirements
+```bash
+pip install pygame
+```
+
+## Files
+| File | Description |
+|------|-------------|
+| `Racer/racer.py` | Dodge enemies and collect coins |
+| `snake/snake.py` | Classic snake with levels and wall collision |
+| `paint/paint.py` | Drawing app with tools and colour palette |
+
+## How to Run
+```bash
+python Racer/racer.py
+python snake/snake.py
+python paint/paint.py
+```
+
+> **Note:** The Racer game requires `road.png`, `redcar.png`, `bluecar.png`, and `coin.png` inside the `Racer/car_imgs/` folder.
+
+## Controls
+- **Racer** — Arrow keys to move, Enter to start
+- **Snake** — Arrow keys or WASD to move, Enter to start
+- **Paint** — Click and drag to draw, toolbar on the left to switch tools and colours
+
+## Author
+Made by Айым | PP2 – Practice 10
