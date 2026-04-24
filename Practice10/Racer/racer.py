@@ -40,14 +40,19 @@ road_img     = load_img("road.png",      (SCREEN_W, SCREEN_H))
 player_img   = load_img("redcar.png",    (50, 80))
 enemy_img    = load_img("bluecar.png",   (50, 80))
 coin_img     = load_img("coin.png",      (28, 28))
+
 font_large = pygame.font.SysFont("Arial", 36, bold=True)
 font_small = pygame.font.SysFont("Arial", 24, bold=True)
+
+
+#  Road geometry
 #   The drivable area is between x=115 and x=485
 ROAD_LEFT  = 115
 ROAD_RIGHT = 485
 
 # Three lane centre positions
 LANE_CENTERS = [170, 295, 420]
+
 
 class PlayerCar(pygame.sprite.Sprite):
     """
@@ -94,10 +99,8 @@ class EnemyCar(pygame.sprite.Sprite):
         self.speed = speed             # Pixels per frame (increases with score)
 
     def update(self):
-        """Move downward; remove when it scrolls off the bottom."""
+        """Move downward only; removal is handled in run_game to track score."""
         self.rect.y += self.speed
-        if self.rect.top > SCREEN_H:
-            self.kill()                # Remove from all groups
 
 
 class Coin(pygame.sprite.Sprite):
@@ -145,15 +148,11 @@ class ScrollingRoad:
         surface.blit(road_img, (0, self.y1))
         surface.blit(road_img, (0, self.y2))
 
-def draw_hud(surface, score, coins, lives):
-    """Render the score (top-left), coin count (top-right), and lives (below score)."""
-    # Score – top left
+
+def draw_hud(surface, score, coins, lives=0):
+    """Render the score (top-left) and coin count (top-right)."""
     score_surf = font_small.render(f"Score: {score}", True, WHITE)
     surface.blit(score_surf, (10, 10))
-
-    # Lives – below score
-    lives_surf = font_small.render(f"Lives: {lives}", True, WHITE)
-    surface.blit(lives_surf, (10, 40))
 
     # Coin counter – top right (with coin icon)
     coin_text = font_small.render(f"x {coins}", True, YELLOW)
@@ -166,6 +165,7 @@ def draw_text_centre(surface, text, font, colour, y):
     """Draw text horizontally centred at the given y coordinate."""
     surf = font.render(text, True, colour)
     surface.blit(surf, (SCREEN_W // 2 - surf.get_width() // 2, y))
+
 
 def show_start_screen():
     """Blocking loop that shows the title until the player presses Enter."""
@@ -206,38 +206,32 @@ def show_game_over(score, coins):
         clock.tick(FPS)
 
 
+# ══════════════════════════════════════════════
+#  MAIN GAME LOOP
+# ══════════════════════════════════════════════
+
 def run_game():
     """Core gameplay loop. Returns when the player loses all lives."""
 
-    # ── State variables ──────────────────────
     score       = 0
     coins_count = 0
-    lives       = 3
-    enemy_speed = 4                    # Starts at 4, increases with score
+    enemy_speed = 4                    # Starts at 4, increases with score avoided
 
-    # ── Sprite groups ────────────────────────
-    player    = PlayerCar()
-    all_sprites   = pygame.sprite.Group(player)
-    enemy_group   = pygame.sprite.Group()
-    coin_group    = pygame.sprite.Group()
+    player      = PlayerCar()
+    all_sprites = pygame.sprite.Group(player)
+    enemy_group = pygame.sprite.Group()
+    coin_group  = pygame.sprite.Group()
 
-    # ── Timers for spawning ──────────────────
-    # Enemies spawn every ENEMY_INTERVAL ms; coins every COIN_INTERVAL ms
     ENEMY_INTERVAL = 1500              # ms between enemy spawns
-    COIN_INTERVAL  = 2500             # ms between coin spawns
+    COIN_INTERVAL  = 2500              # ms between coin spawns
 
-    pygame.time.set_timer(pygame.USEREVENT + 1, ENEMY_INTERVAL)  # enemy spawn event
-    pygame.time.set_timer(pygame.USEREVENT + 2, COIN_INTERVAL)   # coin  spawn event
+    pygame.time.set_timer(pygame.USEREVENT + 1, ENEMY_INTERVAL)
+    pygame.time.set_timer(pygame.USEREVENT + 2, COIN_INTERVAL)
 
     road = ScrollingRoad(speed=5)
 
-    # ── Invincibility flash after a hit ──────
-    invincible       = False
-    invincible_timer = 0
-    INVINCIBLE_MS    = 2000            # 2 s of invincibility after collision
-
     while True:
-        dt = clock.tick(FPS)           # Delta time in ms
+        clock.tick(FPS)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -249,63 +243,61 @@ def run_game():
                 enemy_group.add(e)
                 all_sprites.add(e)
 
-            # Coin spawn timer fired (random chance: 70 %)
+            # Coin spawn timer fired (random chance: 70%)
             if event.type == pygame.USEREVENT + 2:
                 if random.random() < 0.70:
                     c = Coin()
                     coin_group.add(c)
                     all_sprites.add(c)
+
         road.update()
         all_sprites.update()
 
-        # Increase score over time and speed up enemies accordingly
-        score += 1
-        enemy_speed = 4 + score // 300  # Every 300 frames add 1 to speed
+        # Score +1 for each enemy car that passes below the screen (avoided)
+        for enemy in list(enemy_group):
+            if enemy.rect.top > SCREEN_H:
+                score += 1
+                enemy.kill()
 
-        # Manage invincibility countdown
-        if invincible:
-            invincible_timer -= dt
-            if invincible_timer <= 0:
-                invincible = False
+        # Remove coins that go off screen
+        for coin in list(coin_group):
+            if coin.rect.top > SCREEN_H:
+                coin.kill()
 
-        # Check player ↔ enemy collision (only if not invincible)
-        if not invincible:
-            hit = pygame.sprite.spritecollideany(player, enemy_group)
-            if hit:
-                hit.kill()             # Remove the enemy that was hit
-                lives -= 1
-                invincible       = True
-                invincible_timer = INVINCIBLE_MS
-                if lives <= 0:
-                    return score, coins_count  # Game over
+        # Speed up enemies every 3 avoided cars
+        enemy_speed = 4 + score // 3
 
-        # Check player ↔ coin collision
+        # Collision with enemy → instant game over (no lives)
+        if pygame.sprite.spritecollideany(player, enemy_group):
+            return score, coins_count
+
+        # Collect coins
         collected = pygame.sprite.spritecollide(player, coin_group, True)
-        coins_count += len(collected)  # Add however many coins were collected
+        coins_count += len(collected)
 
+        # Draw
         road.draw(screen)
+        screen.blit(player.image, player.rect)
 
-        # Flash player sprite while invincible (every 200 ms)
-        if invincible and (pygame.time.get_ticks() // 200) % 2 == 0:
-            pass                       # Skip drawing to create a flicker effect
-        else:
-            screen.blit(player.image, player.rect)
-
-        # Draw all non-player sprites
         for sprite in enemy_group:
             screen.blit(sprite.image, sprite.rect)
         for sprite in coin_group:
             screen.blit(sprite.image, sprite.rect)
 
-        draw_hud(screen, score // 10, coins_count, lives)
+        draw_hud(screen, score, coins_count, 0)
 
         pygame.display.flip()
+
+
+# ══════════════════════════════════════════════
+#  ENTRY POINT
+# ══════════════════════════════════════════════
 
 def main():
     show_start_screen()
     while True:
         final_score, final_coins = run_game()
-        if not show_game_over(final_score // 10, final_coins):
+        if not show_game_over(final_score, final_coins):
             break
 
 
