@@ -7,7 +7,7 @@ practices is re-implemented here; only new features are added.
 import csv
 import json
 from datetime import date, datetime
-from connect import connect
+from connect import connect #DB connection 
 
 # ──────────────────────────────────────────────────────────────
 #  Internal helpers
@@ -43,9 +43,9 @@ def _run_query(sql, params=()):
 
 def _json_serial(obj):
     """JSON serialiser for date/datetime objects."""
-    if isinstance(obj, (date, datetime)):
-        return obj.isoformat()
-    raise TypeError(f"Type {type(obj)} not serialisable")
+    if isinstance(obj, (date, datetime)): #Checks type of variable
+        return obj.isoformat() # because json cannot store data objects, it converts them to string 
+    raise TypeError(f"Type {type(obj)} not serialisable") # raise -- Stops program and shows error
 
 
 # ──────────────────────────────────────────────────────────────
@@ -149,12 +149,13 @@ def search_contacts_all_fields(query):
     _print_contacts(rows, ["ID", "Name", "Email", "Birthday", "Group", "Phones"])
     return rows
 
-
+# COALESCE prevents overwriting existing values with NULL, it is related to SQL not python, If user gives new email → update it
+#If user gives nothing → keep old one
 def filter_by_group(group_name):
     """Show contacts belonging to a given group, sorted by name."""
     rows = _run_query(
         """SELECT c.id, c.name, c.email, c.birthday, g.name AS grp,
-                  STRING_AGG(p.phone || ' (' || COALESCE(p.type,'?') || ')', ', ') AS phones
+                  STRING_AGG(p.phone || ' (' || COALESCE(p.type,'?') || ')', ', ') AS phones 
              FROM contacts c
              LEFT JOIN groups g ON g.id = c.group_id
              LEFT JOIN phones p ON p.contact_id = c.id

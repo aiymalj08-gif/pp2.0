@@ -3,4 +3,4 @@ DB_CONFIG = {
     "database": "phonebook_db",
     "user":     "postgres",
     "password": "1234"
-}
+} # connection to postgreSQL
