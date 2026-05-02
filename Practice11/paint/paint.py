@@ -14,6 +14,7 @@ Full code comments throughout.
 
 import pygame
 import sys
+import math 
 
 SCREEN_W   = 900
 SCREEN_H   = 700
@@ -56,6 +57,10 @@ TOOL_PENCIL  = "pencil"
 TOOL_RECT    = "rect"
 TOOL_CIRCLE  = "circle"
 TOOL_ERASER  = "eraser"
+TOOL_RTRIANGLE = "rtriangle"
+TOOL_ETRIANGLE = "etriangle"
+TOOL_RHOMBUS = "rhombus"
+TOOL_SQUARE = "square"
 
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
@@ -98,16 +103,16 @@ def palette_rect(index):
     col  = index % cols
     row  = index // cols
     x    = 8 + col * (size + gap)
-    y    = 430 + row * (size + gap)
+    y    = 520 + row * (size + gap)
     return pygame.Rect(x, y, size, size)
 
 
 def brush_minus_rect():
-    return pygame.Rect(8,  370, 36, 28)
+    return pygame.Rect(8,  480, 36, 28)
 
 
 def brush_plus_rect():
-    return pygame.Rect(52, 370, 36, 28)
+    return pygame.Rect(52, 480, 36, 28)
 
 def draw_toolbar(active_tool, current_colour, brush_size):
     """Render the entire left-side toolbar."""
@@ -126,18 +131,22 @@ def draw_toolbar(active_tool, current_colour, brush_size):
         (TOOL_RECT,    "▭ Rect",    pygame.Rect(8, 106, 144, 32)),
         (TOOL_CIRCLE,  "○ Circle",  pygame.Rect(8, 144, 144, 32)),
         (TOOL_ERASER,  "⌫ Eraser",  pygame.Rect(8, 182, 144, 32)),
+        (TOOL_SQUARE,    "□ Square",   pygame.Rect(8, 220, 144, 32)),
+        (TOOL_RTRIANGLE, "◣ R.Tri",    pygame.Rect(8, 258, 144, 32)),
+        (TOOL_ETRIANGLE, "△ E.Tri",    pygame.Rect(8, 296, 144, 32)),
+        (TOOL_RHOMBUS,   "◇ Rhombus",  pygame.Rect(8, 334, 144, 32))
     ]
     for tool_id, tool_label, rect in tools:
         draw_button(screen, rect, tool_label, active=(active_tool == tool_id))
 
     # ── Current colour preview ─────────────
-    label(screen, "Colour", 8, 226)
-    colour_rect = pygame.Rect(8, 244, 144, 36)
+    label(screen, "Colour", 8, 380)
+    colour_rect = pygame.Rect(8, 398, 144, 36)
     pygame.draw.rect(screen, current_colour, colour_rect, border_radius=6)
     pygame.draw.rect(screen, WHITE, colour_rect, 2, border_radius=6)
 
     # ── Brush size ─────────────────────────
-    label(screen, f"Brush: {brush_size}px", 8, 306)
+    label(screen, f"Brush: {brush_size}px", 8, 450)
     # Minus button
     draw_button(screen, brush_minus_rect(), "–")
     draw_button(screen, brush_plus_rect(),  "+")
@@ -147,7 +156,7 @@ def draw_toolbar(active_tool, current_colour, brush_size):
     pygame.draw.circle(screen, MID_GRAY,       (dot_x, dot_y), min(brush_size, 24), 1)
 
     # ── Clear canvas button ─────────────────
-    draw_button(screen, pygame.Rect(8, 628, 144, 32), "Clear Canvas")
+    draw_button(screen, pygame.Rect(8, 653, 144, 32), "Clear Canvas")
 
     # ── Colour palette ─────────────────────
     label(screen, "Palette", 8, 412)
@@ -197,6 +206,50 @@ def draw_circle_shape(surface, start, end, colour, fill=True):
         else:
             pygame.draw.ellipse(surface, colour, rect, 3)
 
+
+def draw_square(surface, start, end, colour):
+    size = min(abs(end[0] - start[0]), abs(end[1] - start[1]))
+    x, y = start
+    if end[0] < start[0]:
+        x -= size
+    if end[1] < start[1]:
+        y -= size
+    pygame.draw.rect(surface, colour, (x, y, size, size))
+
+
+def draw_right_triangle(surface, start, end, colour):
+    x1, y1 = start
+    x2, y2 = end
+    points = [(x1, y1), (x2, y1), (x1, y2)]
+    pygame.draw.polygon(surface, colour, points)
+
+
+def draw_equilateral_triangle(surface, start, end, colour):
+    x1, y1 = start
+    x2, y2 = end
+    side = abs(x2 - x1)
+    height = int((math.sqrt(3) / 2) * side)
+    points = [
+        (x1, y2),
+        (x1 + side, y2),
+        (x1 + side // 2, y2 - height)
+    ]
+    pygame.draw.polygon(surface, colour, points)
+
+
+def draw_rhombus(surface, start, end, colour):
+    x1, y1 = start
+    x2, y2 = end
+    cx = (x1 + x2) // 2
+    cy = (y1 + y2) // 2
+    points = [
+        (cx, y1),
+        (x2, cy),
+        (cx, y2),
+        (x1, cy)
+    ]
+    pygame.draw.polygon(surface, colour, points)
+
 def main():
     # ── Application state ───────────────────
     active_tool    = TOOL_PENCIL       # Currently selected tool
@@ -231,6 +284,15 @@ def main():
                         active_tool = TOOL_CIRCLE
                     elif pygame.Rect(8, 182, 144, 32).collidepoint(mx, my):
                         active_tool = TOOL_ERASER
+
+                    elif pygame.Rect(8, 220, 144, 32).collidepoint(mx, my):   # NEW
+                        active_tool = TOOL_SQUARE
+                    elif pygame.Rect(8, 258, 144, 32).collidepoint(mx, my):   # NEW
+                        active_tool = TOOL_RTRIANGLE
+                    elif pygame.Rect(8, 296, 144, 32).collidepoint(mx, my):   # NEW
+                        active_tool = TOOL_ETRIANGLE
+                    elif pygame.Rect(8, 334, 144, 32).collidepoint(mx, my):   # NEW
+                        active_tool = TOOL_RHOMBUS
 
                     # Brush size buttons
                     elif brush_minus_rect().collidepoint(mx, my):
@@ -270,6 +332,14 @@ def main():
                     # Commit rectangle / circle to the permanent canvas on release
                     if active_tool == TOOL_RECT:
                         draw_rect_shape(canvas, drag_start, end_pos, current_colour)
+                    elif active_tool == TOOL_SQUARE:        # NEW
+                        draw_square(canvas, drag_start, end_pos, current_colour)
+                    elif active_tool == TOOL_RTRIANGLE:    # NEW
+                        draw_right_triangle(canvas, drag_start, end_pos, current_colour)
+                    elif active_tool == TOOL_ETRIANGLE:    # NEW
+                        draw_equilateral_triangle(canvas, drag_start, end_pos, current_colour)
+                    elif active_tool == TOOL_RHOMBUS:      # NEW
+                        draw_rhombus(canvas, drag_start, end_pos, current_colour)
                     elif active_tool == TOOL_CIRCLE:
                         draw_circle_shape(canvas, drag_start, end_pos, current_colour)
                 drawing    = False
@@ -307,7 +377,7 @@ def main():
         screen.blit(canvas, (CANVAS_X, 0))
 
         # 3. Preview of in-progress rect / circle drag
-        if drawing and drag_start and active_tool in (TOOL_RECT, TOOL_CIRCLE):
+        if drawing and drag_start and active_tool in (TOOL_RECT, TOOL_CIRCLE, TOOL_ETRIANGLE, TOOL_RTRIANGLE, TOOL_RHOMBUS, TOOL_SQUARE):
             mx, my   = pygame.mouse.get_pos()
             cur_pos  = canvas_pos(mx, my)
 
@@ -317,7 +387,20 @@ def main():
                 draw_rect_shape(preview, drag_start, cur_pos, current_colour, fill=False)
             elif active_tool == TOOL_CIRCLE:
                 draw_circle_shape(preview, drag_start, cur_pos, current_colour, fill=False)
+
+            elif active_tool == TOOL_SQUARE:
+                draw_square(preview, drag_start, cur_pos, current_colour)
+
+            elif active_tool == TOOL_RTRIANGLE:
+                 draw_right_triangle(preview, drag_start, cur_pos, current_colour)
+
+            elif active_tool == TOOL_ETRIANGLE:
+                draw_equilateral_triangle(preview, drag_start, cur_pos, current_colour)
+
+            elif active_tool == TOOL_RHOMBUS:
+                draw_rhombus(preview, drag_start, cur_pos, current_colour)
             screen.blit(preview, (CANVAS_X, 0))
+            
 
         # 4. Eraser cursor – show a circle where the eraser will act
         if active_tool == TOOL_ERASER:
